@@ -17,12 +17,13 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
+          cache: 'yarn'
 
       - name: Install Dependencies
-        run: npm install
+        run: yarn install
 
       - name: Build Project
-        run: npm run build
+        run: NODE_OPTIONS="--max-old-space-size=768" yarn build
 
       - name: Run Tests (Optional)
-        run: npm run test
+        run: yarn test
