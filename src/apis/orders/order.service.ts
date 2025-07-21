@@ -265,7 +265,7 @@ async generateQr(createOrderDto: CreateOrderDto) {
     };
 
     const createdOrder = await this.orderModel.create(orderData);
-    // đây là trừ quantity khi đặt mua
+    // đây là trừ quantity khi đặt
     if (createOrderDto.paymentMethod === 'cash') {
       for (const item of itemsWithPrice) {
         await this.productModel.findByIdAndUpdate(
