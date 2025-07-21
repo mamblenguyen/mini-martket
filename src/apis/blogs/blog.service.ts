@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, InternalServerErrorException, NotFound
 import mongoose from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Readable } from 'stream';
-import { GoogleDriveUploader } from 'src/providers/storage/drive/drive.upload';
+import { GoogleDriveUploader } from '../../providers/storage/drive/drive.upload';
 import { CreateBlogDto } from './dto/create.dto';
 import { CreateTopicDto } from './dto/createTopic.dto';
 import { UpdateTopicDto } from './dto/updateTopic.dto';
