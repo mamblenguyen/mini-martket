@@ -266,7 +266,6 @@ async generateQr(createOrderDto: CreateOrderDto) {
 
     const createdOrder = await this.orderModel.create(orderData);
 
-    // Bước 8: Nếu thanh toán tiền mặt, giảm số lượng tồn kho tương ứng
     if (createOrderDto.paymentMethod === 'cash') {
       for (const item of itemsWithPrice) {
         await this.productModel.findByIdAndUpdate(
