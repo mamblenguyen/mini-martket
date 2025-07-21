@@ -5,10 +5,10 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { extname } from 'path';
 import { ConfigService } from '@nestjs/config';
 import multerS3 from 'multer-s3'; // ✅ đúng
-import { s3Client } from 'src/providers/storage/aws-s3/aws.config';
-import { ResponseData } from 'src/global/globalClass';
-import { HttpMessage, HttpStatus } from 'src/global/globalEnum';
-import { uploadToS3 } from 'src/providers/storage/aws-s3/upload-to-s3';
+// import { s3Client } from 'src/providers/storage/aws-s3/aws.config';
+import { ResponseData } from '@src/global/globalClass';
+import { HttpMessage, HttpStatus } from '@src/global/globalEnum';
+import { uploadToS3 } from '@src/providers/storage/aws-s3/upload-to-s3';
 import { memoryStorage } from 'multer';
 import { Brand } from './schemas/brand.schema';
 

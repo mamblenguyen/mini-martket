@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { BlogService } from './blog.service';
-import { GoogleDriveUploader } from 'src/providers/storage/drive/drive.upload';
+import { GoogleDriveUploader } from '@src/providers/storage/drive/drive.upload';
 import { BlogController } from './blog.controller';
 import { UserSchema } from '../auth/UserSchema/user.schema';
 import { BlogSchema, ChildTopicSchema, TopicSchema } from './BlogSchema/blog.schema';

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import admin from "firebase-admin";
-import serviceAccountRaw from '../../../src/providers/storage/firebase/keyfirebase.json';
+import serviceAccountRaw from '@src/providers/storage/firebase/keyfirebase.json';
 const serviceAccount = serviceAccountRaw as admin.ServiceAccount;
 
 @Injectable()

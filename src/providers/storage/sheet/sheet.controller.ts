@@ -31,7 +31,7 @@ export class GoogleSheetsController {
         step: row[1] || '',
         response: row[2] || '',
       }));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching Google Sheets data:', error.message);
       throw new Error(
         `Failed to fetch data from Google Sheets: ${

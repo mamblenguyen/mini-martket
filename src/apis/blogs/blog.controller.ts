@@ -12,9 +12,9 @@ import {
     UploadedFile,
     UseInterceptors,
 } from '@nestjs/common';
-import { ResponseData } from 'src/global/globalClass';
+import { ResponseData } from '@src/global/globalClass';
 import { Blog, ChildTopic, Topic } from './BlogSchema/blog.schema';
-import { HttpMessage, HttpStatus } from 'src/global/globalEnum';
+import { HttpMessage, HttpStatus } from '@src/global/globalEnum';
 import { BlogService } from './blog.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { title } from 'process';

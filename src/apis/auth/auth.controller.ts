@@ -19,15 +19,15 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { CreateUserDto } from './dto/register.tdo';
 
-import { HttpStatus, HttpMessage } from 'src/global/globalEnum';
-import { ResponseData } from 'src/global/globalClass';
+import { HttpStatus, HttpMessage } from '@src/global/globalEnum';
+import { ResponseData } from '@src/global/globalClass';
 import { AuthGuard } from '@nestjs/passport';
 import { response } from 'express';
 import { User } from './UserSchema/user.schema';
 import { RefreshTokenDto } from './dto/refreshToken.dto';
 import { CreateGoogleUserDto } from './dto/create-google-user.dto';
 import { ChangePasswordDto, UpdateUserDto } from './dto/update-user.dto';
-import { uploadToS3 } from 'src/providers/storage/aws-s3/upload-to-s3';
+import { uploadToS3 } from '@src/providers/storage/aws-s3/upload-to-s3';
 
 UnauthorizedException;
 @Controller('auth')
@@ -118,7 +118,7 @@ export class AuthController {
         HttpStatus.SUCCESS,
         HttpMessage.SUCCESS,
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error('Registration error:', error.message);
       return new ResponseData<User | null>(
         null,
@@ -135,7 +135,7 @@ export class AuthController {
     try {
       const result = await this.authService.loginWithGoogle(user);
       return new ResponseData(result, HttpStatus.SUCCESS, HttpMessage.SUCCESS);
-    } catch (error) {
+    } catch (error: any) {
       return new ResponseData<{ user: User; token: string } | null>(
         null,
         HttpStatus.ERROR,
@@ -207,7 +207,7 @@ export class AuthController {
       return res
         .status(200)
         .json({ message: 'Password reset email sent successfully' });
-    } catch (error) {
+    } catch (error: any) {
       return res.status(400).json({ error: error.message });
     }
   }
@@ -219,7 +219,7 @@ export class AuthController {
     try {
       await this.authService.resetPassword(token, newPassword);
       return { message: 'Password reset successful' };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error resetting password:', error);
       throw error;
     }
@@ -234,7 +234,7 @@ export class AuthController {
         HttpStatus.SUCCESS,
         HttpMessage.SUCCESS,
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching topics:', error);
       return new ResponseData<User>(null, HttpStatus.ERROR, HttpMessage.ERROR);
     }
@@ -259,7 +259,7 @@ export class AuthController {
         HttpStatus.SUCCESS,
         HttpMessage.SUCCESS,
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating user:', error);
       return new ResponseData<User>(null, HttpStatus.ERROR, HttpMessage.ERROR);
     }

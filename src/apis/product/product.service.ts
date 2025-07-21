@@ -8,7 +8,7 @@ import { CreateProductDto } from './dto/product.dto';
 import * as bwipjs from 'bwip-js';
 // import { v4 as uuidv4 } from 'uuid';
 import { nanoid } from 'nanoid';
-import { uploadToS3 } from 'src/providers/storage/aws-s3/upload-to-s3';
+import { uploadToS3 } from '@src/providers/storage/aws-s3/upload-to-s3';
 import slugify from 'slugify';
 
 @Injectable()

@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 import * as path from 'path';
 import mjml2html from 'mjml';
-import { transporter } from 'src/providers/mail/mailler';
+import { transporter } from '@src/providers/mail/mailler';
 
 @Injectable()
 export class EmailService {

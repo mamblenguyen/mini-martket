@@ -2,11 +2,11 @@ import { Controller, Post, Get, Put, Delete, Param, Body, UseInterceptors, Uploa
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/product.dto';
 import {  FilesInterceptor } from '@nestjs/platform-express';
-import { ResponseData } from 'src/global/globalClass';
-import { HttpMessage, HttpStatus } from 'src/global/globalEnum';
+import { ResponseData } from '@src/global/globalClass';
+import { HttpMessage, HttpStatus } from '@src/global/globalEnum';
 import { Product } from './schemas/product.schema';
 import { memoryStorage } from 'multer';
-import { uploadToS3 } from 'src/providers/storage/aws-s3/upload-to-s3';
+import { uploadToS3 } from '@src/providers/storage/aws-s3/upload-to-s3';
 
 @Controller('product')
 export class ProductController {

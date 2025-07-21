@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, InternalServerErrorException, NotFound
 import mongoose from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Readable } from 'stream';
-import { GoogleDriveUploader } from '../../providers/storage/drive/drive.upload';
+import { GoogleDriveUploader } from '@src/providers/storage/drive/drive.upload';
 import { CreateBlogDto } from './dto/create.dto';
 import { CreateTopicDto } from './dto/createTopic.dto';
 import { UpdateTopicDto } from './dto/updateTopic.dto';
@@ -37,7 +37,7 @@ export class BlogService {
     
             const created = new this.topicModel(topicDto);
             return await created.save(); // sử dụng .save() để chạy pre('save') middleware (nếu cần)
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error create topic:', error);
             throw new BadRequestException(error.message);
         }
@@ -51,7 +51,7 @@ export class BlogService {
                 throw new NotFoundException(`Topic with ID ${id} not found`);
               }
             return res;
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error create topic:', error);
             throw error;
         }
@@ -71,7 +71,7 @@ export class BlogService {
                 throw new NotFoundException(`Topic with ID ${id} not found`);
               }
             return res;
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error create topic:', error);
             throw error;
         }
@@ -85,7 +85,7 @@ export class BlogService {
                 throw new NotFoundException(`Topic with ID ${id} not found`);
               }
             return res;
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error deleting topic:', error);
             throw error;
         }
@@ -97,7 +97,7 @@ export class BlogService {
         try {
             const res = await this.childTopicModel.create(childTopictopic);
             return res;
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error create child topic:', error);
             throw error;
         }
@@ -111,7 +111,7 @@ export class BlogService {
                 throw new NotFoundException(`Topic with ID ${id} not found`);
               }
             return res;
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error update child topic :', error);
             throw error;
         }
@@ -132,7 +132,7 @@ export class BlogService {
                 throw new NotFoundException(`Topic with ID ${id} not found`);
               }
             return res;
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error create child topic:', error);
             throw error;
         }
@@ -146,7 +146,7 @@ export class BlogService {
                 throw new NotFoundException(`Topic with ID ${id} not found`);
               }
             return res;
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error deleting child topic:', error);
             throw error;
         }
@@ -236,7 +236,7 @@ export class BlogService {
           const ImageUrl = this.googleDriveUploader.getThumbnailUrl(fileId);
           const blogData = { ...blog, avatar: ImageUrl };
           return await this.blogModel.create(blogData);
-        } catch (error) {
+        } catch (error: any) {
           console.error('Error creating blog:', error);
           if (error instanceof NotFoundException) {
             throw error; 
@@ -275,7 +275,7 @@ export class BlogService {
                 throw new NotFoundException(`Topic with ID ${id} not found`);
               }
             return res;
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error updating blog:', error);
             throw error;
         }
@@ -290,7 +290,7 @@ export class BlogService {
                 throw new NotFoundException(`Topic with ID ${id} not found`);
               }
             return res;
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error deleting blog:', error);
             throw error;
         }

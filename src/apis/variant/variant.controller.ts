@@ -13,12 +13,12 @@ import { CreateVariantDto } from './dto/variant.dto';
 import { VariantService } from './variant.service';
 import { extname } from 'path';
 import multerS3 from 'multer-s3';
-import { s3Client } from 'src/providers/storage/aws-s3/aws.config';
+// import { s3Client } from 'src/providers/storage/aws-s3/aws.config';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ResponseData } from 'src/global/globalClass';
-import { HttpMessage, HttpStatus } from 'src/global/globalEnum';
+import { ResponseData } from '@src/global/globalClass';
+import { HttpMessage, HttpStatus } from '@src/global/globalEnum';
 import { Variant } from './schemas/variant.schema';
-import { uploadToS3 } from 'src/providers/storage/aws-s3/upload-to-s3';
+import { uploadToS3 } from '@src/providers/storage/aws-s3/upload-to-s3';
 import { memoryStorage } from 'multer';
 // const multerS3Storage = multerS3({
 //   s3: s3Client, // Sử dụng client S3 đã cấu hình

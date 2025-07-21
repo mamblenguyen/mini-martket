@@ -10,11 +10,11 @@ import {
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto/category.dto';
-import { ResponseData } from 'src/global/globalClass';
-import { HttpMessage, HttpStatus } from 'src/global/globalEnum';
+import { ResponseData } from '@src/global/globalClass';
+import { HttpMessage, HttpStatus } from '@src/global/globalEnum';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Category } from './schemas/category.schema';
-import { uploadToS3 } from 'src/providers/storage/aws-s3/upload-to-s3';
+import { uploadToS3 } from '@src/providers/storage/aws-s3/upload-to-s3';
 import { memoryStorage } from 'multer';
 
 @Controller('categories')

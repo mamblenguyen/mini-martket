@@ -12,13 +12,13 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 // import { RegisterDto } from './dto/register.tdo';
 import { LoginDto } from './dto/login.dto';
-import { GoogleDriveUploader } from 'src/providers/storage/drive/drive.upload';
+import { GoogleDriveUploader } from '@src/providers/storage/drive/drive.upload';
 import slugify from 'slugify';
 import * as jwt from 'jsonwebtoken';
 import * as mjml from 'mjml';
 import * as handlebars from 'handlebars';
 import * as fs from 'fs';
-import { transporter } from 'src/providers/mail/mailler';
+import { transporter } from '@src/providers/mail/mailler';
 import { TypeLogin, User, UserRole } from './UserSchema/user.schema';
 import { CreateUserDto } from './dto/register.tdo';
 import { CreateGoogleUserDto } from './dto/create-google-user.dto';
@@ -423,7 +423,7 @@ export class AuthService {
 
     // Load MJML template from file
     const mjmlTemplate = fs.readFileSync(
-      'src/providers/mail/templates/resetpassword.mjml',
+      '@src/providers/mail/templates/resetpassword.mjml',
       'utf8',
     );
 

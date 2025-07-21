@@ -30,7 +30,7 @@ export class AdminGuard implements CanActivate {
             } else {
                 return false;
             }
-        } catch (err) {
+        } catch (err: any) {
             if (err instanceof jwt.TokenExpiredError) {
                 console.log('Token has expired');
             } else {

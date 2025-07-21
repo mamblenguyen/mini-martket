@@ -7,17 +7,13 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start --watch",
-    "start:dev": "nest start --watch",
-    "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "start:dev": "ts-node -r tsconfig-paths/register src/main.ts",
+    "start:prod": "node -r module-alias/register dist/main.js",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
-    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.802.0",
@@ -43,6 +39,7 @@
     "handlebars": "^4.7.8",
     "jsonwebtoken": "^9.0.2",
     "mjml": "^4.15.3",
+    "module-alias": "^2.2.3",
     "mongoose": "^8.14.1",
     "multer": "^1.4.5-lts.2",
     "multer-s3": "^3.0.1",
@@ -90,21 +87,20 @@
     "webpack-dev-middleware": "^7.4.2",
     "webpack-node-externals": "^3.0.0"
   },
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
-    "rootDir": "src",
-    "testRegex": ".*\\.spec\\.ts$",
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
-    },
-    "collectCoverageFrom": [
-      "**/*.(t|j)s"
-    ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
-  }
+"jest": {
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "rootDir": "src",
+  "testRegex": ".*\\.spec\\.ts$",
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "collectCoverageFrom": ["**/*.(t|j)s"],
+  "coverageDirectory": "../coverage",
+  "testEnvironment": "node"
+},
+  "_moduleAliases": {
+  "@src": "dist",    
+  "@common": "dist/common",
+  "@utils": "dist/utils"
+}
 }

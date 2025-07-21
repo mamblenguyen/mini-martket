@@ -9,8 +9,8 @@ import {
 } from '@nestjs/common';
 import { CreateSupplierDto } from './dto/supplier.dto';
 import { SupplierService } from './supplier.service';
-import { ResponseData } from 'src/global/globalClass';
-import { HttpMessage, HttpStatus } from 'src/global/globalEnum';
+import { ResponseData } from '@src/global/globalClass';
+import { HttpMessage, HttpStatus } from '@src/global/globalEnum';
 
 @Controller('supplier')
 export class SupplierController {

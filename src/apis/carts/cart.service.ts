@@ -155,7 +155,7 @@ export class CartService {
 
       const data = await response.json();
       return data;
-    } catch (error) {
+    } catch (error: any) {
       // Nếu lỗi xảy ra trước khi fetch trả kết quả (ví dụ như lỗi mạng)
       throw new HttpException(error.message || 'Shipping error', 500);
     }

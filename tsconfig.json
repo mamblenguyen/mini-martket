@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-     "resolveJsonModule": true,
     "module": "commonjs",
     "target": "ES2021",
     "declaration": true,
@@ -11,6 +10,11 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
+    "paths": {
+      "@src/*": ["src/*"],
+      "@common/*": ["src/common/*"],
+      "@utils/*": ["src/utils/*"]
+    },
     "incremental": true,
     "tsBuildInfoFile": "./.tsbuildinfo",
     "skipLibCheck": true,
@@ -18,12 +22,13 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "moduleResolution": "node",
+    "resolveJsonModule": true,
+
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
-    "types": ["node"],                      // ✅ Chỉ cần "node"
-    "typeRoots": ["./node_modules/@types", "./src/types"], // ✅ Chỉ cần mặc định
+    "types": ["node", "jest"],
+    "typeRoots": ["./node_modules/@types", "./src/types"]
   },
-  "include": ["src", "types"]
-
+  "include": ["src", "src/types", "test"]
 }

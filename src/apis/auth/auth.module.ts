@@ -7,7 +7,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 
 import { JwtStrategy } from './JWT/jwt.strategy';
-import { GoogleDriveUploader } from 'src/providers/storage/drive/drive.upload';
+import { GoogleDriveUploader } from '@src/providers/storage/drive/drive.upload';
 import { googleStrategy } from './google.strategy';
 import { UserSchema } from './UserSchema/user.schema';
 

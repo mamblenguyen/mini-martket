@@ -9,7 +9,7 @@ import mongoose, { Model, Types } from 'mongoose';
 import { CreateOrderDto, UpdateOrderStatusDto } from './dto/order.dto';
 import { Product, ProductDocument } from '../product/schemas/product.schema';
 import QRCode from 'qrcode';
-import { generateVietQRImageUrl } from 'src/utils/vietqr.util';
+import { generateVietQRImageUrl } from '@src/utils/vietqr.util';
 
 @Injectable()
 export class OrderService {
