@@ -1,0 +1,17 @@
+<mjml>
+  <mj-body>
+    <mj-section>
+      <mj-column>
+        <mj-text font-size="20px" color="#333333" font-family="Helvetica">
+          📩 Yêu cầu liên hệ mới
+        </mj-text>
+        <mj-text>
+          <strong>Họ tên:</strong> {{fullname}}<br/>
+          <strong>Email:</strong> {{email}}<br/>
+          <strong>SĐT:</strong> {{phone}}<br/>
+          <strong>Nội dung:</strong> {{description}}
+        </mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

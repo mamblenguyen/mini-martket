@@ -1,5 +1,5 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import mongoose from "mongoose";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import mongoose from 'mongoose';
 
 @Schema({ timestamps: true })
 export class Order {
@@ -14,11 +14,17 @@ export class Order {
   })
   orderType: 'store' | 'delivery';
 
-  @Prop([{
-    product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
-    quantity: { type: Number, required: true },
-    price: { type: Number, required: true }
-  }])
+  @Prop([
+    {
+      product: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product',
+        required: true,
+      },
+      quantity: { type: Number, required: true },
+      price: { type: Number, required: true },
+    },
+  ])
   items: {
     product: mongoose.Types.ObjectId;
     quantity: number;
@@ -30,7 +36,15 @@ export class Order {
 
   @Prop({
     default: 'pending',
-    enum: ['pending', 'purched', 'processing', 'shipped', 'delivered', 'cancelled', 'completed']
+    enum: [
+      'pending',
+      'purched',
+      'processing',
+      'shipped',
+      'delivered',
+      'cancelled',
+      'completed',
+    ],
   })
   status: string;
 

@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, MinLength, IsIn, IsOptional } from 'class-validator';
 
 export class LoginDto {
   @IsNotEmpty()
@@ -9,5 +9,8 @@ export class LoginDto {
   @IsString()
   @MinLength(6)
   readonly password: string;
-  
+
+  @IsOptional()
+  @IsIn(['web', 'mobile'], { message: 'Device must be either web or mobile' })
+  readonly device?: 'web' | 'mobile';
 }

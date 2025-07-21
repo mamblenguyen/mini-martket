@@ -22,6 +22,10 @@ import { BrandModule } from './apis/brand/brand.module';
 import { SupplierModule } from './apis/supplier/supplier.module';
 import { VariantModule } from './apis/variant/variant.module';
 import { OrderModule } from './apis/orders/order.module';
+import { CartModule } from './apis/carts/cart.module';
+import { CommentModule } from './apis/comment/comment.module';
+import { ContactModule } from './apis/contact/contact.module';
+import { SmsModule } from './apis/sms/sms.module';
 
 @Module({
     imports: [
@@ -35,6 +39,10 @@ import { OrderModule } from './apis/orders/order.module';
         SupplierModule,
         VariantModule,
         OrderModule,
+        CartModule,
+        CommentModule,
+        ContactModule,
+        SmsModule,
         // CourseModule,
         // FlashCardModule,
         // CommentModule1,

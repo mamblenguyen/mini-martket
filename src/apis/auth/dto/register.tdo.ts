@@ -1,19 +1,27 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
-import { UserRole } from '../UserSchema/user.schema';
+import { IsEmail, IsOptional, IsString, IsDateString } from 'class-validator';
 
+export class CreateUserDto {
+  @IsEmail()
+  email: string;
 
-export class RegisterDto {
-  @IsNotEmpty()
   @IsString()
-  readonly fullname: string;
-  readonly avatar: string;
-  @IsNotEmpty()
-  @IsEmail({}, { message: 'Please enter correct email' })
-  readonly email: string;
-  @IsNotEmpty()
+  password: string;
+
   @IsString()
-  @MinLength(6)
-  readonly password: string;
-  readonly role: UserRole;
-  readonly  slug: string;
+  fullname: string;
+
+  @IsString()
+  phone: string;
+
+  @IsOptional()
+  @IsString()
+  address?: string;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
+
+  @IsOptional()
+  @IsDateString()
+  birthday?: string;
 }

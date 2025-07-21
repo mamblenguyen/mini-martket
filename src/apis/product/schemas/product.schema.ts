@@ -34,6 +34,8 @@ export class Product {
 
   @Prop()
   barcode : string;
+  @Prop()
+  slug : string;
   
   @Prop({ type: [String], default: [] })
   images: string[];

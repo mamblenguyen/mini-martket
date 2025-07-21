@@ -35,71 +35,85 @@ export class OrderService {
     return code;
   }
 
-  async generateQr(createOrderDto: CreateOrderDto) {
-    if (
-      !createOrderDto.items ||
-      !Array.isArray(createOrderDto.items) ||
-      createOrderDto.items.length === 0
-    ) {
-      throw new BadRequestException('Order must contain at least one item.');
-    }
-
-    const productIds = createOrderDto.items.map((item) => item.product);
-
-    // Validate product IDs are string and valid ObjectId
-    if (
-      !productIds.every(
-        (id) => typeof id === 'string' && Types.ObjectId.isValid(id),
-      )
-    ) {
-      throw new BadRequestException('Invalid product ID format.');
-    }
-
-    const objectIds = productIds.map((id) => new Types.ObjectId(id));
-    const foundProducts = await this.productModel.find({
-      _id: { $in: objectIds },
-    });
-    if (foundProducts.length !== productIds.length) {
-      throw new BadRequestException('Some products do not exist.');
-    }
-
-    const items = createOrderDto.items.map((item) => {
-      const product = foundProducts.find(
-        (p) => p._id.toString() === item.product,
-      );
-      return {
-        product: item.product,
-        quantity: item.quantity,
-        price: product.price * item.quantity,
-      };
-    });
-
-    const totalAmount = items.reduce((sum, item) => sum + item.price, 0);
-    const orderCode = await this.generateUniqueOrderCode(
-      createOrderDto.orderType,
-    );
-
-    const qrUrl = generateVietQRImageUrl({
-      bankId: 'VietinBank',
-      accountNumber: '100876574685',
-      accountName: 'NGUYEN MINH QUANG',
-      amount: totalAmount,
-      orderCode,
-    });
-
-    return {
-      qrCodeUrl: qrUrl,
-      paymentInfo: {
-        orderCode,
-        bankId: 'VCB',
-        accountNumber: '0123456789',
-        accountName: 'CONG TY TNHH ABC',
-        amount: totalAmount,
-      },
-    };
+async generateQr(createOrderDto: CreateOrderDto) {
+  if (
+    !createOrderDto.items ||
+    !Array.isArray(createOrderDto.items) ||
+    createOrderDto.items.length === 0
+  ) {
+    throw new BadRequestException('Order must contain at least one item.');
   }
 
-  async create(createOrderDto: CreateOrderDto, userId: string | null) {
+  const productIds = createOrderDto.items.map((item) => item.product);
+
+  // Validate product IDs are string and valid ObjectId
+  if (
+    !productIds.every(
+      (id) => typeof id === 'string' && Types.ObjectId.isValid(id),
+    )
+  ) {
+    throw new BadRequestException('Invalid product ID format.');
+  }
+
+  const objectIds = productIds.map((id) => new Types.ObjectId(id));
+  const foundProducts = await this.productModel.find({
+    _id: { $in: objectIds },
+  });
+
+  if (foundProducts.length !== productIds.length) {
+    throw new BadRequestException('Some products do not exist.');
+  }
+
+  const items = createOrderDto.items.map((item) => {
+    const product = foundProducts.find(
+      (p) => p._id.toString() === item.product,
+    );
+    return {
+      product: item.product,
+      quantity: item.quantity,
+      price: product.price * item.quantity,
+    };
+  });
+
+  const totalAmount = items.reduce((sum, item) => sum + item.price, 0);
+  const orderCode = await this.generateUniqueOrderCode(createOrderDto.orderType);
+
+  // Tạo addInfo nếu có ít nhất một trong các thông tin: recipientName, phone
+  let addInfo = '';
+  const parts = [];
+
+  if (createOrderDto.recipientName && createOrderDto.recipientName.trim() !== '') {
+    parts.push(createOrderDto.recipientName.trim());
+  }
+  if (createOrderDto.phone && createOrderDto.phone.trim() !== '') {
+    parts.push(createOrderDto.phone.trim());
+  }
+  parts.push(orderCode); // Luôn thêm mã đơn hàng
+
+  addInfo = parts.join(' - ');
+
+  const qrUrl = generateVietQRImageUrl({
+    bankId: 'VietinBank',
+    accountNumber: '100876574685',
+    accountName: 'NGUYEN MINH QUANG',
+    amount: totalAmount,
+    addInfo, // thông tin hiển thị trong nội dung chuyển khoản, có thể rỗng
+  });
+
+  return {
+    qrCodeUrl: qrUrl,
+    paymentInfo: {
+      orderCode,
+      bankId: 'VCB',
+      accountNumber: '0123456789',
+      accountName: 'CONG TY TNHH ABC',
+      amount: totalAmount,
+    },
+  };
+}
+
+
+  async create(createOrderDto: CreateOrderDto) {
     if (
       createOrderDto.orderType === 'delivery' &&
       (!createOrderDto.shippingAddress ||
@@ -168,7 +182,7 @@ export class OrderService {
       totalAmount,
       paymentMethod: createOrderDto.paymentMethod,
       note: createOrderDto.note,
-      user: userId,
+      user: createOrderDto.user,
       status: createOrderDto.status,
       orderCode,
     });
@@ -188,17 +202,115 @@ export class OrderService {
     return savedOrder;
   }
 
-  //  async updateStatus(id: string, dto: UpdateOrderStatusDto) {
-  //     const order = await this.orderModel.findById(id);
-  //     if (!order) {
-  //       throw new NotFoundException('Order not found');
-  //     }
 
-  //     order.status = dto.status;
-  //     await order.save();
 
-  //     return order;
-  //   }
+ async createOrderAndGenerateQr(createOrderDto: CreateOrderDto) {
+    // Bước 1: Validate items tồn tại, có sản phẩm hợp lệ
+    if (!createOrderDto.items || !Array.isArray(createOrderDto.items) || createOrderDto.items.length === 0) {
+      throw new BadRequestException('Order must contain at least one item.');
+    }
+
+    const productIds = createOrderDto.items.map(i => i.product);
+    if (!productIds.every(id => typeof id === 'string' && Types.ObjectId.isValid(id))) {
+      throw new BadRequestException('Invalid product ID format.');
+    }
+
+    const objectIds = productIds.map(id => new Types.ObjectId(id));
+    const foundProducts = await this.productModel.find({ _id: { $in: objectIds } });
+    if (foundProducts.length !== productIds.length) {
+      throw new BadRequestException('Some products do not exist.');
+    }
+
+    // Bước 2: Xây dựng danh sách items với giá tính sẵn
+    const itemsWithPrice = createOrderDto.items.map(item => {
+      const product = foundProducts.find(p => p._id.toString() === item.product);
+      return {
+        product: new Types.ObjectId(item.product),
+        quantity: item.quantity,
+        price: product.price * item.quantity,
+      };
+    });
+
+    // Bước 3: Tính tổng tiền
+    const totalAmount = itemsWithPrice.reduce((sum, i) => sum + i.price, 0);
+
+    // Bước 4: Kiểm tra điều kiện orderType và shippingAddress
+    if (createOrderDto.orderType === 'delivery') {
+      if (!createOrderDto.shippingAddress || !createOrderDto.shippingAddress.address) {
+        throw new BadRequestException('Shipping address is required for delivery orders.');
+      }
+    }
+
+    // Bước 5: Tạo mã đơn hàng duy nhất
+    const orderCode = await this.generateUniqueOrderCode(createOrderDto.orderType);
+
+    // Bước 6: Thiết lập trạng thái mặc định, ví dụ: nếu orderType là store và thanh toán tiền mặt thì trạng thái 'purched'
+    let status = createOrderDto.status || 'pending';
+    if (createOrderDto.orderType === 'store' && createOrderDto.paymentMethod === 'cash') {
+      status = 'purched';
+    }
+
+    // Bước 7: Tạo đơn hàng mới và lưu vào database
+    const orderData = {
+      user: createOrderDto.user,
+      orderType: createOrderDto.orderType,
+      items: itemsWithPrice,
+      totalAmount,
+      status,
+      shippingAddress: createOrderDto.shippingAddress,
+      paymentMethod: createOrderDto.paymentMethod,
+      note: createOrderDto.note,
+      orderCode,
+      createdAt: new Date(),
+    };
+
+    const createdOrder = await this.orderModel.create(orderData);
+
+    // Bước 8: Nếu thanh toán tiền mặt, giảm số lượng tồn kho tương ứng
+    if (createOrderDto.paymentMethod === 'cash') {
+      for (const item of itemsWithPrice) {
+        await this.productModel.findByIdAndUpdate(
+          item.product,
+          { $inc: { stock: -item.quantity } },
+          { new: true },
+        );
+      }
+    }
+
+    // Bước 9: Tạo thông tin addInfo cho QR code (ví dụ tên người nhận, điện thoại, mã đơn hàng)
+    const parts = [];
+    if (createOrderDto.recipientName?.trim()) parts.push(createOrderDto.recipientName.trim());
+    if (createOrderDto.phone?.trim()) parts.push(createOrderDto.phone.trim());
+    parts.push(orderCode);
+    const addInfo = parts.join(' - ');
+
+    // Bước 10: Tạo QR code URL (bạn dùng hàm generateVietQRImageUrl có sẵn)
+    const qrCodeUrl = generateVietQRImageUrl({
+      bankId: 'VietinBank',
+      accountNumber: '100876574685',
+      accountName: 'NGUYEN MINH QUANG',
+      amount: totalAmount,
+      addInfo,
+    });
+
+    // Trả về dữ liệu đơn hàng và URL QR code thanh toán
+    return {
+      order: createdOrder,
+      qrCodeUrl,
+      paymentInfo: {
+        orderCode,
+        bankId: 'VCB',
+        accountNumber: '0123456789',
+        accountName: 'CONG TY TNHH ABC',
+        amount: totalAmount,
+      },
+    };
+  }
+
+ 
+
+
+
 
   async findOrders({
     page,
@@ -225,6 +337,7 @@ export class OrderService {
     const data = await this.orderModel
       .find(query)
       .populate('items.product user')
+      .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
       .exec();
@@ -238,12 +351,19 @@ export class OrderService {
     return this.orderModel.findById(id).populate('items.product user').exec();
   }
 
+  async findByUserId(user: string): Promise<Order[]> {
+    return this.orderModel.find({user}).populate('items.product').exec();
+  }
+
   async findByStatus(orderType: string): Promise<Order[]> {
     return this.orderModel
       .find({ orderType })
       .populate('items.product user')
       .exec();
   }
+
+  
+
 
   async updateStatus(id: string, status: string): Promise<Order> {
     return this.orderModel
@@ -604,89 +724,86 @@ export class OrderService {
       percentPurchedRevenue, // VD: 30%
     };
   }
-async getMonthlyOrderStatusStats(): Promise<any> {
-  const now = new Date();
-  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-  const monthEnd = new Date(
-    now.getFullYear(),
-    now.getMonth() + 1,
-    0,
-    23,
-    59,
-    59,
-    999,
-  );
+  async getMonthlyOrderStatusStats(): Promise<any> {
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const monthEnd = new Date(
+      now.getFullYear(),
+      now.getMonth() + 1,
+      0,
+      23,
+      59,
+      59,
+      999,
+    );
 
-  const totalOrders = await this.orderModel.countDocuments({
-    createdAt: { $gte: monthStart, $lte: monthEnd },
-  });
+    const totalOrders = await this.orderModel.countDocuments({
+      createdAt: { $gte: monthStart, $lte: monthEnd },
+    });
 
-  const statusStats = await this.orderModel.aggregate([
-    {
-      $match: {
-        createdAt: { $gte: monthStart, $lte: monthEnd },
+    const statusStats = await this.orderModel.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: monthStart, $lte: monthEnd },
+        },
       },
-    },
-    {
-      $group: {
-        _id: '$status',
-        count: { $sum: 1 },
+      {
+        $group: {
+          _id: '$status',
+          count: { $sum: 1 },
+        },
       },
-    },
-  ]);
+    ]);
 
-  const allStatuses = [
-    'pending',
-    'purched',
-    'processing',
-    'shipped',
-    'delivered',
-    'cancelled',
-    'completed',
-  ];
+    const allStatuses = [
+      'pending',
+      'purched',
+      'processing',
+      'shipped',
+      'delivered',
+      'cancelled',
+      'completed',
+    ];
 
-  // Map status sang title theo mẫu getStatusChip
-  const statusTitles: Record<string, string> = {
-    pending: 'Đang xử lý',
-    purched: 'Đã thanh toán',
-    processing: 'Đang xử lý',
-    shipped: 'Đã gửi hàng',
-    delivered: 'Đã giao',
-    cancelled: 'Đã hủy',
-    completed: 'Hoàn thành',
-  };
+    // Map status sang title theo mẫu getStatusChip
+    const statusTitles: Record<string, string> = {
+      pending: 'Đang xử lý',
+      purched: 'Đã thanh toán',
+      processing: 'Đang xử lý',
+      shipped: 'Đã gửi hàng',
+      delivered: 'Đã giao',
+      cancelled: 'Đã hủy',
+      completed: 'Hoàn thành',
+    };
 
-  // Khởi tạo với 0%
-  const statusPercentages: Record<
-    string,
-    { title: string; percent: number }
-  > = {};
-  for (const status of allStatuses) {
-    statusPercentages[status] = {
-      title: statusTitles[status] || status,
-      percent: 0,
+    // Khởi tạo với 0%
+    const statusPercentages: Record<
+      string,
+      { title: string; percent: number }
+    > = {};
+    for (const status of allStatuses) {
+      statusPercentages[status] = {
+        title: statusTitles[status] || status,
+        percent: 0,
+      };
+    }
+
+    // Gán phần trăm thực tế
+    for (const stat of statusStats) {
+      const status = stat._id;
+      const count = stat.count;
+      const percent =
+        totalOrders === 0 ? 0 : Math.round((count / totalOrders) * 10000) / 100;
+      if (statusPercentages[status]) {
+        statusPercentages[status].percent = percent;
+      }
+    }
+
+    return {
+      totalOrders,
+      statusPercentages,
     };
   }
-
-  // Gán phần trăm thực tế
-  for (const stat of statusStats) {
-    const status = stat._id;
-    const count = stat.count;
-    const percent =
-      totalOrders === 0 ? 0 : Math.round((count / totalOrders) * 10000) / 100;
-    if (statusPercentages[status]) {
-      statusPercentages[status].percent = percent;
-    }
-  }
-
-  return {
-    totalOrders,
-    statusPercentages,
-  };
-}
-
-
-
 
   async getProductSalesByMonth(month: number, year: number): Promise<any[]> {
     const start = new Date(year, month - 1, 1); // Bắt đầu từ ngày 1 của tháng
@@ -773,54 +890,53 @@ async getMonthlyOrderStatusStats(): Promise<any> {
   // Top product by quanlity và revenue
 
   async getMonthlyProduct(): Promise<any> {
-  const now = new Date();
-  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-  const monthEnd = new Date(
-    now.getFullYear(),
-    now.getMonth() + 1,
-    0,
-    23,
-    59,
-    59,
-    999,
-  );
-  const topSoldProduct = await this.orderModel.aggregate([
-    {
-      $match: {
-        createdAt: { $gte: monthStart, $lte: monthEnd },
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const monthEnd = new Date(
+      now.getFullYear(),
+      now.getMonth() + 1,
+      0,
+      23,
+      59,
+      59,
+      999,
+    );
+    const topSoldProduct = await this.orderModel.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: monthStart, $lte: monthEnd },
+        },
       },
-    },
-    { $unwind: '$items' },
-    {
-      $group: {
-        _id: '$items.product',
-        totalQuantity: { $sum: '$items.quantity' },
+      { $unwind: '$items' },
+      {
+        $group: {
+          _id: '$items.product',
+          totalQuantity: { $sum: '$items.quantity' },
+        },
       },
-    },
-    { $sort: { totalQuantity: -1 } },
-    { $limit: 1 },
-    {
-      $lookup: {
-        from: 'products',
-        localField: '_id',
-        foreignField: '_id',
-        as: 'product',
+      { $sort: { totalQuantity: -1 } },
+      { $limit: 1 },
+      {
+        $lookup: {
+          from: 'products',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'product',
+        },
       },
-    },
-    { $unwind: '$product' },
-    {
-      $project: {
-        _id: 0,
-        productId: '$_id',
-        name: '$product.name',
-        totalQuantity: 1,
+      { $unwind: '$product' },
+      {
+        $project: {
+          _id: 0,
+          productId: '$_id',
+          name: '$product.name',
+          totalQuantity: 1,
+        },
       },
-    },
-  ]);
+    ]);
 
-  return {
-    topSoldProduct: topSoldProduct[0] || null,
-  };
-}
-
+    return {
+      topSoldProduct: topSoldProduct[0] || null,
+    };
+  }
 }

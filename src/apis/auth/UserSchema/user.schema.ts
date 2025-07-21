@@ -14,29 +14,34 @@ export enum TypeLogin {
 
 @Schema({ timestamps: true })
 export class User {
-
   _id: string;
 
-  @Prop()
+  @Prop({ required: true, unique: true })
   email: string;
 
-  @Prop()
-  password: string;
+  // @Prop({ required: true })
+  // password: string;
 
-  @Prop()
+  @Prop({ required: true })
   fullname: string;
 
-  @Prop()
-  address: string;
+  @Prop({ required: false })
+  address?: string;
 
-  @Prop()
-  phone: string;
+  @Prop({ required: false })
+  description?: string;
 
-  @Prop()
-  avatar: string;
+  @Prop({ required: false, type: Date })
+  birthday?: Date;
 
-  @Prop()
-  description: string;
+  @Prop({ required: false, default: '' })
+password?: string;
+
+@Prop({ required: false, default: '' })
+phone?: string;
+
+  @Prop({ required: false })
+  avatar?: string;
 
   @Prop({ enum: UserRole, default: UserRole.USER })
   role: UserRole;
@@ -44,23 +49,22 @@ export class User {
   @Prop()
   slug: string;
 
-  @Prop()
+  @Prop({ default: null })
   refreshToken: string | null;
-    @Prop()
-    refreshTokenMobile: string | null;
-    @Prop()
+
+  @Prop({ default: null })
+  refreshTokenMobile: string | null;
+
+  @Prop({ default: null })
   passwordResetToken: string | null;
 
-  @Prop()
+  @Prop({ default: null })
   passwordResetExpires: string | null;
 
   @Prop({ enum: TypeLogin, default: TypeLogin.BASIC })
   typeLogin: string;
 
-  @Prop()
-  birthday: Date;
-
-  @Prop({ default: true }) 
+  @Prop({ default: true })
   active: boolean;
 
   async generateSlug() {

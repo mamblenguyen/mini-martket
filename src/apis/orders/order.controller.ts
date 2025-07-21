@@ -22,12 +22,20 @@ export class OrderController {
   async generateQr(@Body() createOrderDto: CreateOrderDto) {
     return await this.orderService.generateQr(createOrderDto);
   }
-
   @Post()
-  async create(@Body() createOrderDto: CreateOrderDto, @Req() req: any) {
-    const userId = req.user?.id || null;
-    return await this.orderService.create(createOrderDto, userId);
+  async create(@Body() createOrderDto: CreateOrderDto) {
+    return await this.orderService.create(createOrderDto);
   }
+
+  @Post('create-order-and-generate-qr')
+  async createOrderAndGenerateQr(
+    @Body() createOrderDto: CreateOrderDto
+  ) {
+    return await this.orderService.createOrderAndGenerateQr(
+      createOrderDto,
+    );
+  }
+
   @Get()
   async findOrders(
     @Query('page') page = 1,
@@ -45,6 +53,11 @@ export class OrderController {
   @Get(':id')
   async findById(@Param('id') id: string) {
     return this.orderService.findById(id);
+  }
+
+ @Get('user/:user')
+  async findByUserId(@Param('user') user: string) {
+    return this.orderService.findByUserId(user);
   }
 
   @Put(':id/status')
@@ -68,11 +81,10 @@ export class OrderController {
     return this.orderService.getProductSalesByDate(parsedDate);
   }
 
- @Get('stats/monthly-sales')
-getMonthlySales() {
-  return this.orderService.getMonthlyProductSales();
-}
-
+  @Get('stats/monthly-sales')
+  getMonthlySales() {
+    return this.orderService.getMonthlyProductSales();
+  }
 
   @Get('stats/monthly-sales/:year/:month')
   getProductSalesByMonth(
@@ -83,26 +95,25 @@ getMonthlySales() {
   }
 
   @Get('stats/daily-sales/:year/:month')
-getDailySalesByMonth(
-  @Param('year') year: number,
-  @Param('month') month: number,
-) {
-  return this.orderService.getDailySalesByMonth(month, year);
-}
+  getDailySalesByMonth(
+    @Param('year') year: number,
+    @Param('month') month: number,
+  ) {
+    return this.orderService.getDailySalesByMonth(month, year);
+  }
 
+  @Get('stats/monthly-purched')
+  getMonthlyPurchedStats() {
+    return this.orderService.getMonthlyPurchedStats();
+  }
 
-@Get('stats/monthly-purched')
-getMonthlyPurchedStats() {
-  return this.orderService.getMonthlyPurchedStats();
-}
+  @Get('stats/monthly-status')
+  getMonthlyOrderStatusStats() {
+    return this.orderService.getMonthlyOrderStatusStats();
+  }
 
-@Get('stats/monthly-status')
-getMonthlyOrderStatusStats() {
-  return this.orderService.getMonthlyOrderStatusStats();
-}
-
-@Get('stats/monthly-top-product')
-getMonthlyProduct() {
-  return this.orderService.getMonthlyProduct();
-}
+  @Get('stats/monthly-top-product')
+  getMonthlyProduct() {
+    return this.orderService.getMonthlyProduct();
+  }
 }

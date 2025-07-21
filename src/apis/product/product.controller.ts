@@ -77,6 +77,29 @@ export class ProductController {
      }
    }
 
+@Get('slug/:slug')
+  async findOneBySlug(@Param('slug') slug: string) {
+     try {
+       const variant = await this.productService.findOneBySlug(slug);
+       return new ResponseData(variant, HttpStatus.SUCCESS, HttpMessage.SUCCESS);
+     } catch (error) {
+       console.error('Error fetching topics:', error);
+       return new ResponseData(null, HttpStatus.ERROR, HttpMessage.ERROR);
+     }
+   }
+
+
+   @Get('related/:slug')
+async findRelated(@Param('slug') slug: string) {
+  try {
+    const relatedProducts = await this.productService.findRelatedProductsByCategory(slug);
+    return new ResponseData(relatedProducts, HttpStatus.SUCCESS, HttpMessage.SUCCESS);
+  } catch (error) {
+    console.error('Error fetching related products:', error);
+    return new ResponseData(null, HttpStatus.ERROR, HttpMessage.ERROR);
+  }
+}
+
   @Put(':id')
   @UseInterceptors(
     FilesInterceptor('images', 5, {
