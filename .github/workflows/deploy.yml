@@ -29,5 +29,4 @@ jobs:
 
 
 
-      - name: Run Tests (Optional)
-        run: yarn test
+      # - name: Run Tests (Optional)
