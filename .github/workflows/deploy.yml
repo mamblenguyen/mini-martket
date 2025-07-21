@@ -23,7 +23,7 @@ jobs:
         run: yarn install
 
       - name: Build Project
-        run: NODE_OPTIONS="--max-old-space-size=768" yarn build
+        run: NODE_OPTIONS="--max-old-space-size=2048" yarn build
 
       - name: Run Tests (Optional)
         run: yarn test
