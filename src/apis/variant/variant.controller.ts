@@ -20,17 +20,17 @@ import { HttpMessage, HttpStatus } from 'src/global/globalEnum';
 import { Variant } from './schemas/variant.schema';
 import { uploadToS3 } from 'src/providers/storage/aws-s3/upload-to-s3';
 import { memoryStorage } from 'multer';
-const multerS3Storage = multerS3({
-  s3: s3Client, // Sử dụng client S3 đã cấu hình
-  bucket: process.env.AWS_S3_BUCKET!, // Bucket của bạn
-  contentType: multerS3.AUTO_CONTENT_TYPE, // Tự động xác định loại nội dung
-  key: (req, file, cb) => {
-    cb(
-      null,
-      `variant/${Date.now()}-${Math.round(Math.random() * 1e9)}${extname(file.originalname)}`,
-    );
-  },
-});
+// const multerS3Storage = multerS3({
+//   s3: s3Client, // Sử dụng client S3 đã cấu hình
+//   bucket: process.env.AWS_S3_BUCKET!, // Bucket của bạn
+//   contentType: multerS3.AUTO_CONTENT_TYPE, // Tự động xác định loại nội dung
+//   key: (req, file, cb) => {
+//     cb(
+//       null,
+//       `variant/${Date.now()}-${Math.round(Math.random() * 1e9)}${extname(file.originalname)}`,
+//     );
+//   },
+// });
 @Controller('variant')
 export class VariantController {
   constructor(private readonly variantService: VariantService) {}

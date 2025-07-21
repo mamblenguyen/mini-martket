@@ -4,7 +4,7 @@ import { CreateBrandDto } from './dto/brand.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { extname } from 'path';
 import { ConfigService } from '@nestjs/config';
-import multerS3 from 'multer-s3';
+import multerS3 from 'multer-s3'; // ✅ đúng
 import { s3Client } from 'src/providers/storage/aws-s3/aws.config';
 import { ResponseData } from 'src/global/globalClass';
 import { HttpMessage, HttpStatus } from 'src/global/globalEnum';
@@ -13,14 +13,14 @@ import { memoryStorage } from 'multer';
 import { Brand } from './schemas/brand.schema';
 
 // Tạo bộ lưu trữ tùy chỉnh cho multer với S3
-const multerS3Storage = multerS3({
-  s3: s3Client, // Sử dụng client S3 đã cấu hình
-  bucket: process.env.AWS_S3_BUCKET!, // Bucket của bạn
-  contentType: multerS3.AUTO_CONTENT_TYPE, // Tự động xác định loại nội dung
-  key: (req, file, cb) => {
-    cb(null, `brands/${Date.now()}-${Math.round(Math.random() * 1e9)}${extname(file.originalname)}`);
-  },
-});
+// const multerS3Storage = multerS3({
+//   s3: s3Client, // Sử dụng client S3 đã cấu hình
+//   bucket: process.env.AWS_S3_BUCKET!, // Bucket của bạn
+//   contentType: multerS3.AUTO_CONTENT_TYPE, // Tự động xác định loại nội dung
+//   key: (req, file, cb) => {
+//     cb(null, `brands/${Date.now()}-${Math.round(Math.random() * 1e9)}${extname(file.originalname)}`);
+//   },
+// });
 
 @Controller('brands')
 export class BrandController {
