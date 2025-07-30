@@ -1,8 +1,7 @@
-// upload-to-s3.ts
 import { S3 } from 'aws-sdk';
 import { extname } from 'path';
 import { Express } from 'express';
-import '../../../types/multer-s3'; // đường dẫn tùy theo cấu trúc dự án
+import '../../types/multer-s3'; // chỉnh lại đường dẫn nếu khác
 
 const s3 = new S3();
 
