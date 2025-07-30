@@ -8,7 +8,7 @@
     "paths": {
       "@src/*": ["src/*"]
     },
-    "types": ["node", "express", "multer"]
+    "types": ["node"]
   },
   "include": ["src"],
   "exclude": ["**/*.spec.ts", "test"]
