@@ -14,38 +14,40 @@ export class ProductController {
   @UseGuards(AuthGuard('jwt'))
 
   @Post()
-  @UseInterceptors(
-    FilesInterceptor('images', 5, {
-      storage: memoryStorage(), // ❗ giữ file trong RAM, không upload ngay
-      limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
-    }),
-  )
-    async create(
-      @UploadedFiles() files: Express.Multer.File[],
-      @Body() createProductDto: CreateProductDto,
-    ) {
-      try {
-        if (files?.length > 0) {
-          const imageUrls = await Promise.all(files.map(file => uploadToS3(file , 'product')));
-          createProductDto.images = imageUrls;
-        }
+@UseInterceptors(
+  FilesInterceptor('images', 5, {
+    storage: memoryStorage(), // giữ file trong RAM, chưa upload ngay
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+  }),
+)
+async create(
+  @UploadedFiles() files: Express.Multer.File[],
+  @Body() createProductDto: CreateProductDto,
+) {
+  try {
+    const imageUrls = files?.length
+      ? await Promise.all(files.map(file => uploadToS3(file, 'product')))
+      : [];
 
-        const product = await this.productService.createWithBarcode(createProductDto);
-        return new ResponseData<Product>(
-          product,
-          HttpStatus.SUCCESS,
-          HttpMessage.SUCCESS,
-        );
-      } catch (error) {
-        console.error('Error creating product:', error);
-        return new ResponseData<Product>(
-          null,
-          HttpStatus.ERROR,
-          HttpMessage.ERROR,
-        );
-      }
-    }
-  
+    createProductDto.images = imageUrls;
+
+    const product = await this.productService.createWithBarcode(createProductDto);
+
+    return new ResponseData<Product>(
+      product,
+      HttpStatus.SUCCESS,
+      HttpMessage.SUCCESS,
+    );
+  } catch (error) {
+    console.error('Error creating product:', error);
+    return new ResponseData<Product>(
+      null,
+      HttpStatus.ERROR,
+      HttpMessage.ERROR,
+    );
+  }
+}
+
   @Get()
  async findAll() {
     try {
@@ -104,43 +106,45 @@ async findRelated(@Param('slug') slug: string) {
 }
   @UseGuards(AuthGuard('jwt'))
 
-  @Put(':id')
-  @UseInterceptors(
-    FilesInterceptor('images', 5, {
-      storage: memoryStorage(), // ảnh chưa được upload lên S3
-      limits: { fileSize: 10 * 1024 * 1024 },
-    }),
-  )
-  async update(
-    @Param('id') id: string,
-    @UploadedFiles() files: Express.Multer.File[],
-    @Body() updateProductDto: CreateProductDto,
-  ) {
-    try {
-      if (files?.length > 0) {
-        const imageUrls = await Promise.all(files.map(file => uploadToS3(file, 'product')));
-        updateProductDto.images = [
-          ...(updateProductDto.images || []), // ảnh cũ nếu có
-          ...imageUrls,
-        ];
-      }
-  
-      const product = await this.productService.update(id, updateProductDto);
-  
-      return new ResponseData<Product>(
-        product,
-        HttpStatus.SUCCESS,
-        HttpMessage.SUCCESS,
-      );
-    } catch (error) {
-      console.error('Error updating product:', error);
-      return new ResponseData<Product>(
-        null,
-        HttpStatus.ERROR,
-        HttpMessage.ERROR,
-      );
-    }
+ @Put(':id')
+@UseInterceptors(
+  FilesInterceptor('images', 5, {
+    storage: memoryStorage(),
+    limits: { fileSize: 10 * 1024 * 1024 },
+  }),
+)
+async update(
+  @Param('id') id: string,
+  @UploadedFiles() files: Express.Multer.File[],
+  @Body() updateProductDto: CreateProductDto,
+) {
+  try {
+    const newImageUrls = files?.length
+      ? await Promise.all(files.map(file => uploadToS3(file, 'product')))
+      : [];
+
+    updateProductDto.images = [
+      ...(updateProductDto.images || []),
+      ...newImageUrls,
+    ];
+
+    const product = await this.productService.update(id, updateProductDto);
+
+    return new ResponseData<Product>(
+      product,
+      HttpStatus.SUCCESS,
+      HttpMessage.SUCCESS,
+    );
+  } catch (error) {
+    console.error('Error updating product:', error);
+    return new ResponseData<Product>(
+      null,
+      HttpStatus.ERROR,
+      HttpMessage.ERROR,
+    );
   }
+}
+
   
     @UseGuards(AuthGuard('jwt'))
 

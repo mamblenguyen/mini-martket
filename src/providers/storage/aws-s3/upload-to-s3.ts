@@ -1,22 +1,13 @@
+// upload-to-s3.ts
 import { S3 } from 'aws-sdk';
 import { extname } from 'path';
+import { Express } from 'express';
+import '../../../types/multer-s3'; // đường dẫn tùy theo cấu trúc dự án
 
 const s3 = new S3();
 
-type MulterFile = {
-  buffer: Buffer;
-  originalname: string;
-  mimetype: string;
-  fieldname?: string;
-  size?: number;
-  destination?: string;
-  encoding?: string;
-  filename?: string;
-  path?: string;
-};
-
 export const uploadToS3 = async (
-  file: MulterFile,
+  file: Express.Multer.File,
   nameModule: string
 ): Promise<string> => {
   const fileKey = `${nameModule}/${Date.now()}-${Math.round(
