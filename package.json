@@ -27,6 +27,7 @@
     "@nestjs/mongoose": "^11.0.3",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.1.0",
+    "@types/multer": "^2.0.0",
     "aws-sdk": "^2.1692.0",
     "bcrypt": "^5.1.1",
     "bwip-js": "^4.6.0",
