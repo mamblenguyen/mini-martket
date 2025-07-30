@@ -6,7 +6,7 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import * as bodyParser from 'body-parser';
-import { BlogModule } from './apis/blogs/blog.module';
+// import { BlogModule } from './apis/blogs/blog.module';
 // import { CourseModule } from './apis/Course/course.module';
 // import { FlashCardModule } from './apis/flashCards/flashCard.module';
 // import { CommentModule1 } from './apis/socket/comments/comment.module';
@@ -31,7 +31,7 @@ import { SmsModule } from './apis/sms/sms.module';
     imports: [
         // ScheduleModule.forRoot(),
         // UserModule,
-        BlogModule,
+        // BlogModule,
         AuthModule,
         CategoryModule,
         ProductModule,
