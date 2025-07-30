@@ -10,6 +10,7 @@ import * as bwipjs from 'bwip-js';
 import { nanoid } from 'nanoid';
 import { uploadToS3 } from '@src/providers/storage/aws-s3/upload-to-s3';
 import slugify from 'slugify';
+import { Express } from 'express';
 
 @Injectable()
 export class ProductService {
@@ -51,18 +52,14 @@ export class ProductService {
     });
 
     // Upload buffer lên S3
-    const barcodeFile: Express.Multer.File = {
-      buffer: barcodeBuffer,
-      originalname: `${barcode}.png`,
-      mimetype: 'image/png',
-      fieldname: 'barcode',
-      size: barcodeBuffer.length,
-      destination: '',
-      encoding: '7bit',
-      filename: '',
-      path: '',
-      stream: undefined!,
-    };
+    const barcodeFile = {
+  buffer: barcodeBuffer,
+  originalname: `${barcode}.png`,
+  mimetype: 'image/png',
+  fieldname: 'barcode',
+  size: barcodeBuffer.length,
+} as Express.Multer.File;
+
 
     const barcodeUrl = await uploadToS3(barcodeFile, 'barcodes');
 
