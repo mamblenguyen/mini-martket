@@ -224,7 +224,19 @@ export class AuthController {
       throw error;
     }
   }
-
+@UseGuards(AuthGuard('jwt'))
+@Get('me')
+async getMe(@Req() req): Promise<ResponseData<User>> {
+  try {
+    const userId = req.user.id;
+    const user = await this.authService.findOne(userId);
+    return new ResponseData<User>(user, HttpStatus.SUCCESS, HttpMessage.SUCCESS);
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    return new ResponseData<User>(null, HttpStatus.ERROR, HttpMessage.ERROR);
+  }
+}
+    @UseGuards(AuthGuard('jwt'))
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<ResponseData<User>> {
     try {
@@ -239,7 +251,7 @@ export class AuthController {
       return new ResponseData<User>(null, HttpStatus.ERROR, HttpMessage.ERROR);
     }
   }
-
+  @UseGuards(AuthGuard('jwt'))
   @Put(':id')
   @UseInterceptors(FileInterceptor('avatar'))
   async update(

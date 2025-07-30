@@ -12,9 +12,10 @@ import {
 import { CartService } from './cart.service';
 import { Types } from 'mongoose';
 import { AddToCartDto, ClearCartDto, RemoveCartItemDto, UpdateCartItemDto } from './dto/cart.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 // DTO
-
+@UseGuards(AuthGuard('jwt'))
 @Controller('cart')
 // @UseGuards(AuthGuard) // Nếu có auth guard thì bật lên nhé
 export class CartController {

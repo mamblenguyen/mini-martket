@@ -6,12 +6,15 @@ import {
   Delete,
   Param,
   Body,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateSupplierDto } from './dto/supplier.dto';
 import { SupplierService } from './supplier.service';
 import { ResponseData } from '@src/global/globalClass';
 import { HttpMessage, HttpStatus } from '@src/global/globalEnum';
+import { AuthGuard } from '@nestjs/passport';
 
+  @UseGuards(AuthGuard('jwt'))
 @Controller('supplier')
 export class SupplierController {
   constructor(private readonly supplierService: SupplierService) {}

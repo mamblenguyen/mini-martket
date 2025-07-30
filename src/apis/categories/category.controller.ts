@@ -6,7 +6,8 @@ import {
   Param,
   Put,
   Delete,
-  UseInterceptors, UploadedFile
+  UseInterceptors, UploadedFile,
+  UseGuards
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto/category.dto';
@@ -16,6 +17,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Category } from './schemas/category.schema';
 import { uploadToS3 } from '@src/providers/storage/aws-s3/upload-to-s3';
 import { memoryStorage } from 'multer';
+import { AuthGuard } from '@nestjs/passport';
+  @UseGuards(AuthGuard('jwt'))
 
 @Controller('categories')
 export class CategoryController {

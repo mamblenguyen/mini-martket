@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Put, Delete, Param, Body, UseInterceptors, UploadedFile, UploadedFiles } from '@nestjs/common';
+import { Controller, Post, Get, Put, Delete, Param, Body, UseInterceptors, UploadedFile, UploadedFiles, UseGuards } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/product.dto';
 import {  FilesInterceptor } from '@nestjs/platform-express';
@@ -7,10 +7,11 @@ import { HttpMessage, HttpStatus } from '@src/global/globalEnum';
 import { Product } from './schemas/product.schema';
 import { memoryStorage } from 'multer';
 import { uploadToS3 } from '@src/providers/storage/aws-s3/upload-to-s3';
-
+import { AuthGuard } from '@nestjs/passport';
 @Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
+  @UseGuards(AuthGuard('jwt'))
 
   @Post()
   @UseInterceptors(
@@ -66,6 +67,8 @@ export class ProductController {
       return new ResponseData(null, HttpStatus.ERROR, HttpMessage.ERROR);
     }
   }
+    @UseGuards(AuthGuard('jwt'))
+
   @Get('barcode/:barcode')
   async findOneByBarcode(@Param('barcode') barcode: string) {
      try {
@@ -99,6 +102,7 @@ async findRelated(@Param('slug') slug: string) {
     return new ResponseData(null, HttpStatus.ERROR, HttpMessage.ERROR);
   }
 }
+  @UseGuards(AuthGuard('jwt'))
 
   @Put(':id')
   @UseInterceptors(
@@ -138,7 +142,8 @@ async findRelated(@Param('slug') slug: string) {
     }
   }
   
-  
+    @UseGuards(AuthGuard('jwt'))
+
   @Delete(':id')
  async remove(@Param('id') id: string) {
     try {

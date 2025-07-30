@@ -8,6 +8,7 @@ import {
   Body,
   UseInterceptors,
   UploadedFile,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateVariantDto } from './dto/variant.dto';
 import { VariantService } from './variant.service';
@@ -20,6 +21,7 @@ import { HttpMessage, HttpStatus } from '@src/global/globalEnum';
 import { Variant } from './schemas/variant.schema';
 import { uploadToS3 } from '@src/providers/storage/aws-s3/upload-to-s3';
 import { memoryStorage } from 'multer';
+import { AuthGuard } from '@nestjs/passport';
 // const multerS3Storage = multerS3({
 //   s3: s3Client, // Sử dụng client S3 đã cấu hình
 //   bucket: process.env.AWS_S3_BUCKET!, // Bucket của bạn
@@ -31,6 +33,8 @@ import { memoryStorage } from 'multer';
 //     );
 //   },
 // });
+  @UseGuards(AuthGuard('jwt'))
+
 @Controller('variant')
 export class VariantController {
   constructor(private readonly variantService: VariantService) {}

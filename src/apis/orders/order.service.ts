@@ -354,6 +354,17 @@ async generateQr(createOrderDto: CreateOrderDto) {
     return this.orderModel.find({user}).populate('items.product').exec();
   }
 
+  async deleteOrder(orderId: string): Promise<{ message: string }> {
+  const order = await this.orderModel.findById(orderId);
+  if (!order) {
+    throw new NotFoundException('Order not found');
+  }
+
+  await this.orderModel.findByIdAndDelete(orderId);
+
+  return { message: 'Order deleted successfully' };
+}
+
   async findByStatus(orderType: string): Promise<Order[]> {
     return this.orderModel
       .find({ orderType })

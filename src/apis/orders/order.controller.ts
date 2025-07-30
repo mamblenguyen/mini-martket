@@ -8,11 +8,12 @@ import {
   Query,
   Req,
   UseGuards,
+  Delete,
 } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/order.dto';
-// import { JwtAuthGuard } from 'src/auth/jwt-auth.guard'; // nếu dùng JWT
-
+import { AuthGuard } from '@nestjs/passport';
+@UseGuards(AuthGuard('jwt'))
 @Controller('orders')
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
@@ -28,12 +29,8 @@ export class OrderController {
   }
 
   @Post('create-order-and-generate-qr')
-  async createOrderAndGenerateQr(
-    @Body() createOrderDto: CreateOrderDto
-  ) {
-    return await this.orderService.createOrderAndGenerateQr(
-      createOrderDto,
-    );
+  async createOrderAndGenerateQr(@Body() createOrderDto: CreateOrderDto) {
+    return await this.orderService.createOrderAndGenerateQr(createOrderDto);
   }
 
   @Get()
@@ -55,7 +52,7 @@ export class OrderController {
     return this.orderService.findById(id);
   }
 
- @Get('user/:user')
+  @Get('user/:user')
   async findByUserId(@Param('user') user: string) {
     return this.orderService.findByUserId(user);
   }
@@ -63,6 +60,10 @@ export class OrderController {
   @Put(':id/status')
   async updateStatus(@Param('id') id: string, @Query('status') status: string) {
     return this.orderService.updateStatus(id, status);
+  }
+  @Delete(':id')
+  async deleteOrder(@Param('id') id: string) {
+    return await this.orderService.deleteOrder(id);
   }
 
   @Get('status/:orderType')

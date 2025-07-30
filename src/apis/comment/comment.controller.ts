@@ -14,6 +14,7 @@ export class CommentController {
       content: string;
       parentId?: string;
       userName?: string;
+    avatar?: string; // ✅ thêm avatar
     },
   ) {
     const result = await this.commentService.createComment(body);
