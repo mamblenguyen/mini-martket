@@ -3,15 +3,34 @@ import { extname } from 'path';
 
 const s3 = new S3();
 
-export const uploadToS3 = async (file: Express.Multer.File , nameModule): Promise<string> => {
-  const fileKey = `${nameModule}/${Date.now()}-${Math.round(Math.random() * 1e9)}${extname(file.originalname)}`;
+type MulterFile = {
+  buffer: Buffer;
+  originalname: string;
+  mimetype: string;
+  fieldname?: string;
+  size?: number;
+  destination?: string;
+  encoding?: string;
+  filename?: string;
+  path?: string;
+};
 
-  const result = await s3.upload({
-    Bucket: process.env.AWS_S3_BUCKET!,
-    Key: fileKey,
-    Body: file.buffer,
-    ContentType: file.mimetype,
-  }).promise();
+export const uploadToS3 = async (
+  file: MulterFile,
+  nameModule: string
+): Promise<string> => {
+  const fileKey = `${nameModule}/${Date.now()}-${Math.round(
+    Math.random() * 1e9
+  )}${extname(file.originalname)}`;
+
+  const result = await s3
+    .upload({
+      Bucket: process.env.AWS_S3_BUCKET!,
+      Key: fileKey,
+      Body: file.buffer,
+      ContentType: file.mimetype,
+    })
+    .promise();
 
   return result.Location;
 };
